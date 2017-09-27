@@ -1,0 +1,21 @@
+{
+  "name": "wearable-360-control",
+  "version": "1.0.1",
+  "description": "wearable controlled 360 video application",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron .",
+    "install": "electron-rebuild"
+  },
+  "author": "Rubin Huang",
+  "devDependencies": {
+    "electron": "^1.4.1",
+    "electron-rebuild": "^1.4.0"
+  },
+  "dependencies": {
+    "express": "^4.15.5",
+    "open": "0.0.5",
+    "serialport": "^4.0.7",
+    "socket.io": "^2.0.3"
+  }
+}

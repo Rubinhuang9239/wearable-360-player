@@ -1,0 +1,229 @@
+<html>
+
+<meta name="viewport" content="width=device-width initial-scale=1.0 user-scalable=no">
+<title>Control Panel</title>
+
+	<head>
+
+		<script src="/socket.io/socket.io.js"></script>
+
+		<script>
+
+			window.addEventListener("load",function(){
+				ui.init();
+			})
+
+			var socket = io({ query: "role=control" });
+
+			socket.on("status",function(status){
+
+				var unityIndi = document.getElementById("unity-indi");
+				var serialIndi = document.getElementById("serial-indi");
+
+				if(status.unity != true){
+					console.log("lost unity");
+					unityIndi.style.backgroundColor = "#F75";
+				}
+				else{
+					console.log("unity connected");
+					unityIndi.style.backgroundColor = "#0C9";
+				}
+
+				if(status.serial != true){
+					console.log("lost serial");
+					serialIndi.style.backgroundColor = "#F75";
+				}
+				else{
+					console.log("serial connected");
+					serialIndi.style.backgroundColor = "#0C9";
+				}
+
+			});
+
+			socket.on("feedback",function(data){
+
+				if(data.playFeedBack == 0){
+					ui.isPlaying = false;
+					ui.controlBtn.style.backgroundColor = "#00CC99";
+					ui.controlBtn.innerHTML = "Play";
+				}else if(data.playFeedBack == 1){
+					ui.isPlaying = true;
+					ui.controlBtn.style.backgroundColor = "#FF9900";
+					ui.controlBtn.innerHTML = "Pause";
+				}
+
+			});
+
+			var ui = {};
+
+			ui.isPlaying = false;
+
+			ui.init = function(){
+
+				var unityBtn = document.getElementById("unity-btn");
+
+				unityBtn.addEventListener("click",function(){
+					socket.emit("launchUnity", true);
+				});
+
+				var resetBtn = document.getElementById("reset-btn");
+
+				resetBtn.addEventListener("click",function(){
+					socket.emit("reset");
+				});
+
+				ui.controlBtn = document.getElementById("control-btn");
+				ui.controlBtn.addEventListener("click",function(){
+					if(ui.isPlaying === true){
+						socket.emit("play", false);
+					}else{
+						socket.emit("play", true);
+					}
+					ui.isPlaying = !ui.isPlaying;
+				});
+
+
+			}
+
+
+		</script>
+
+		<style>	
+		
+		html,body{
+
+			height: 100%;
+			width: 100%;
+			margin: 0px;
+			padding: 0px;
+		}
+
+		body{
+			background-color: #444;
+			font-family: helvetica;
+		}
+
+		#ui-wrap{
+			height:100%;
+			width:100%;
+			position: relative;
+		}
+
+		#console{
+			box-sizing: border-box;
+			padding: 2%;
+			position: absolute;
+			left: 0px;
+			height: 100%;
+			width:50%;
+			color: #FFF;
+			background-color: #000;
+		}
+
+		#func-control{
+			box-sizing: border-box;
+			padding: 2%;
+			position: absolute;
+			right: 0px;
+			height: 100%;
+			width:50%;
+		}
+
+		h4{
+			color: #FFF;
+		}
+
+		#con-indi{
+			position: relative;
+			height: 48px;
+			width: 100%;
+			background-color: #000;
+		}
+
+		.indicators{
+			position: absolute;
+			top: 0px;
+			bottom: 0px;
+			margin: auto;
+			height: 32px;
+			width: 47%;
+			background-color: #F75;
+			line-height: 32px;
+			text-align: center;
+			left: 2%;
+		}
+
+		#serial-indi{
+			left: auto;
+			right: 2%;
+		}
+
+		#ctl-btns{
+			position: relative;
+			height: 200px;
+			width: 100%;
+		}
+
+		.btn{
+			position: absolute;
+			color: #FFF;
+			height: 64px;
+			width: 49%;
+			line-height: 64px;
+			text-align: center;
+			cursor: pointer;
+			opacity: 0.8;
+			transition: opacity 0.2s ease-in-out;
+			overflow: hidden;
+		}
+		.btn:hover{
+			opacity: 1;
+		}
+
+		#unity-btn{
+			background-color: #00CC99;
+		}
+
+		#reset-btn{
+			right: 0px;
+			background-color: #FF9900;
+		}
+
+		#control-btn{
+			top: 69px;
+			width: 100%;
+			background-color: #00CC99;
+		}
+
+		</style>
+
+	</head>
+
+	<body>
+		<div id="ui-wrap">
+
+			<div id = "console">
+				<h4>Console</h4>
+				<ul>
+					<li>- Waiting for connect -</li>
+				</ul>
+			</div>
+
+			<div id = "func-control">
+				<h4>Connection Indicator</h4>
+				<div id="con-indi">
+					<div class="indicators" id="unity-indi">Unity</div>
+					<div class="indicators" id="serial-indi">Serial</div>
+				</div>
+				<h4>Controls</h4>
+				<div id="ctl-btns">
+					<div class="btn" id="unity-btn">Launch Unity</div>
+					<div class="btn" id="reset-btn">Reset</div>
+					<div class="btn" id="control-btn">Play</div>
+				</div>
+			</div>
+		</div>
+
+	</body>
+
+</html>
